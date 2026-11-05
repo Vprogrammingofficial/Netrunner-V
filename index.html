@@ -81,6 +81,40 @@
         </div>
     </div>
 
+    <!--Game (connection test)-->
+    <div id="screen-gm" class="screen">
+        <div class="ed-topbar">
+            <div class="ed-header">GAME - CONNECTION TEST</div>
+            <div class="ed-button">
+                <div class="sh-button" id="gm-leave">leave</div>
+            </div>
+        </div>
+        <div class="ed-body">
+            <div class="le-sidebar">
+                <div class="le-header">NETWORK</div>
+                <div class="le-body">
+                    <div class="gm-code" id="gm-code">-----</div>
+                    <div class="sh-button le-btn" id="gm-copy" style="display:none">COPY CODE</div>
+                    <div class="sh-button le-btn" id="gm-lock" style="display:none">LOCK LOBBY: OFF</div>
+                    <div class="sl-feedback" id="gm-status"></div>
+                    <div class="sl-charlist-label">PLAYERS</div>
+                    <div class="sl-charlist" id="gm-roster"></div>
+                </div>
+            </div>
+            <div class="gm-main">
+                <div class="sl-charlist-label" style="margin-top:0;border-top:none;padding-top:0">SESSION</div>
+                <div id="gm-session"></div>
+                <canvas class="gl-preview" id="gm-preview" width="400" height="240"></canvas>
+                <div class="sl-charlist-label">MESSAGES</div>
+                <div class="gm-row">
+                    <input class="le-property-input" id="gm-msg" type="text" placeholder="message" spellcheck="false" style="user-select:text">
+                    <div class="sh-button" id="gm-send">SEND</div>
+                </div>
+                <div class="gm-log" id="gm-log"></div>
+            </div>
+        </div>
+    </div>
+
     <!--Netrunner maker-->
     <div id="screen-ne" class="screen">
         <div class="ed-topbar">
@@ -246,6 +280,7 @@
                 <div class="opt-header">LEVEL PREVIEW</div>
                 <canvas class="gl-preview" id="gl-preview" width="400" height="240"></canvas>
                 <div class="gl-preview-info" id="gl-preview-info"></div>
+                <div id="gl-lobby"></div>
                 <div class="sl-feedback" id="gl-host-feedback"></div>
                 <div class="sh-button" id="gl-start-net">START NETWORK</div>
                 <div class="sh-button" id="gl-host-close">CLOSE</div>
@@ -290,7 +325,10 @@
     <script src="scripts/editors/level_editor/le_panel.js"></script>
     <script src="scripts/editors/level_editor/le_input.js"></script>
     <script src="scripts/editors/level_editor/le_init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="scripts/game/net.js"></script>
     <script src="scripts/game/gameloader.js"></script>
+    <script src="scripts/game/gametest.js"></script>
     <script src="scripts/core/options.js"></script>
 
 

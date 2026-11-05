@@ -6,10 +6,11 @@
 // Current HP edits change this selection only, never the saved character.
 //
 // Hand-off to the game / network layer:
-//   JACK IN (solo)    -> Store session.game = { mode: "solo", level, char }, then shows #screen-gm if it exists
-//   JACK IN (connect) -> window.GLNet.connect({ hostCode, char })  must return a Promise of { level }
-//   START NETWORK     -> window.GLNet.host({ level })              must return a Promise of the host code
-// If window.GLNet isn't loaded the loader says so instead of failing.
+//   JACK IN (solo)    -> Store session.game = { mode: "solo", level, char }, then shows #screen-gm (gametest.js)
+//   JACK IN (connect) -> GLNet.connect({ hostCode, char })  resolves { level, id, players }, then session.game is saved
+//   START NETWORK     -> GLNet.host({ level })              resolves the host code; the host popup then shows a live lobby
+//                        then session.game = { mode: "host", level } and #screen-gm opens. See net.js.
+// If GLNet isn't loaded the loader says so.
 
 const GameLoader = (() => {
     const SEL_PATH = "session.glSel";
@@ -323,6 +324,7 @@ const GameLoader = (() => {
 
     function openHost() {
         hostFb("");
+        renderLobby();
         refresh("all");
         showOnly("pu-gl-host");
     }
@@ -343,6 +345,7 @@ const GameLoader = (() => {
         if (!hostCode) { jackFb("ENTER A HOST CODE", true); return; }
         const net = window.GLNet;
         if (!net || typeof net.connect !== "function") { jackFb("NETWORK MODULE NOT LOADED", true); return; }
+        if (net.state !== "idle") { jackFb("NETWORK BUSY", true); return; }
 
         jackFb("CONNECTING...");
         Promise.resolve(net.connect({ hostCode, char: sel.char })).then(
@@ -352,15 +355,50 @@ const GameLoader = (() => {
     }
 
     function startNetwork() {
-        if (!sel.level) { hostFb("LOAD A LEVEL FIRST", true); return; }
         const net = window.GLNet;
         if (!net || typeof net.host !== "function") { hostFb("NETWORK MODULE NOT LOADED", true); return; }
 
+        if (net.role === "host") { // the button is STOP NETWORK while hosting
+            hostFb("STOPPING...");
+            net.leave().then(() => hostFb("NETWORK STOPPED"));
+            return;
+        }
+        if (net.state !== "idle") { hostFb("NETWORK BUSY", true); return; }
+        if (!sel.level) { hostFb("LOAD A LEVEL FIRST", true); return; }
+
         hostFb("STARTING...");
-        Promise.resolve(net.host({ level: sel.level })).then(
-            code => hostFb(code ? `HOSTING - CODE: ${code}` : "HOSTING"),
+        net.host({ level: sel.level }).then(
+            code => { hostFb(`HOSTING - CODE: ${code}`); launch({ mode: "host", level: sel.level }); },
             e => hostFb(errText(e), true)
         );
+    }
+
+    // live lobby under the host preview: code + connected players
+    function renderLobby() {
+        const box = $("gl-lobby");
+        const btn = $("gl-start-net");
+        if (!box || !btn) return;
+        box.replaceChildren();
+
+        const net = window.GLNet;
+        const hosting = !!net && net.role === "host" && net.state === "hosting";
+        btn.textContent = hosting ? "STOP NETWORK" : net && net.state === "opening" ? "STARTING..." : "START NETWORK";
+        if (!hosting) return;
+
+        box.appendChild(el("div", "sl-charlist-label", `LOBBY - CODE ${net.code}`));
+        for (const p of net.players()) {
+            const card = el("div", "sl-char-card");
+            const info = el("div", "sl-char-card__info");
+            info.appendChild(el("div", "sl-char-card__name", p.name));
+            info.appendChild(el("div", "sl-char-card__stats", p.host ? "HOST" : `TEAM ${p.team} | ${p.ping == null ? "--" : p.ping + " MS"}`));
+            card.appendChild(info);
+            if (!p.host) {
+                const kick = el("div", "sl-char-btn sl-char-btn--delete", "KICK");
+                kick.addEventListener("click", () => net.kick(p.id));
+                card.appendChild(kick);
+            }
+            box.appendChild(card);
+        }
     }
 
     // ---------- screen lifecycle ----------
@@ -384,6 +422,16 @@ const GameLoader = (() => {
         on("gl-host-close", hideAll);
 
         window.addEventListener("hashchange", hideAll); // back/forward shouldn't leave popups hanging
+
+        const net = window.GLNet;
+        if (net) {
+            net.on("players", renderLobby);
+            net.on("status", renderLobby);
+            net.on("join", e => hostFb(`${e.player.name} JOINED`));
+            net.on("leave", e => hostFb(`${e.player.name} LEFT (${e.reason})`));
+            net.on("error", e => { hostFb(errText(e), true); jackFb(errText(e), true); });
+            net.on("closed", e => { renderLobby(); hostFb(`NETWORK CLOSED: ${e.reason}`); jackFb(`DISCONNECTED: ${e.reason}`, true); });
+        }
         refresh("all");
     }
 
@@ -394,5 +442,5 @@ const GameLoader = (() => {
 
     registerScreen("screen-gl", { init, enter });
 
-    return { selection: () => JSON.parse(JSON.stringify(sel)) };
+    return { selection: () => JSON.parse(JSON.stringify(sel)), drawPreview };
 })();

@@ -155,3 +155,63 @@
     margin-top: 6px;
     min-height: 2.8em;
 }
+
+
+/* ───────── game screen (connection test) ───────── */
+
+.gm-main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding: 14px;
+}
+
+.gm-code {
+    font-size: 2em;
+    letter-spacing: 0.3em;
+    text-align: center;
+    padding: 6px 0;
+}
+
+.gm-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 6px 0;
+}
+
+.gm-row .le-property-input {
+    margin: 0;
+    flex: 1;
+}
+
+.gm-row .sh-button {
+    width: auto;
+    margin: 0;
+    padding: 8px 14px;
+    font-size: 0.85em;
+}
+
+.gm-main .gl-preview {
+    max-width: 520px;
+}
+
+.gm-log {
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--main-col);
+    padding: 6px;
+    font-size: 0.8em;
+    line-height: 1.5;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.gm-log div {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.gm-bad {
+    color: #ff4444;
+}
