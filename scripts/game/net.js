@@ -36,10 +36,10 @@ const GLNet = (() => {
         connectTimeout: 25000,  // client: time allowed for open + welcome (ICE can take a while through a relay). host: time allowed for a hello
         hostRetries: 5,         // new random code if one is taken
         pingEvery: 3000,
-        silentTimeout: 12000,   // no traffic for this long = peer is gone
+        silentTimeout: 40000,   // no traffic for this long = peer is gone (generous: a hidden tab's timers can be throttled hard)
         relay: true,            // host re-broadcasts client app messages to the other clients
         cleanChar: null,        // (char) => cleanChar; defaults to LEState.cleanChar
-        iceServers: [           // STUN finds your public address; the TURN entry is PeerJS's shared free relay (often busy)
+        iceServers: [           // STUN finds your public address; the TURN entry is PeerJS's shared free relay (may be busy or down).
             { urls: "stun:stun.l.google.com:19302" },
             { urls: "stun:global.stun.twilio.com:3478" },
             { urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"], username: "peerjs", credential: "peerjsp" },
@@ -89,7 +89,7 @@ const GLNet = (() => {
     //   host 0            -> the browser is hiding local addresses (Brave shields, WebRTC-blocking extension, VPN)
     //   relay 0           -> no working TURN relay (not configured, wrong credentials, or unreachable)
     //   ICE ERRORS 701 .. -> that STUN/TURN server could not be reached
-    function watchIce(conn) {
+    function watchIce(conn, turnCount) {
         const pc = conn && conn.peerConnection;
         const counts = { host: 0, srflx: 0, prflx: 0, relay: 0 };
         const errors = [];
@@ -108,7 +108,7 @@ const GLNet = (() => {
             summary() {
                 if (!pc) return "NO ICE INFO";
                 const c = counts;
-                return `ICE ${pc.iceConnectionState} | host ${c.host} srflx ${c.srflx} relay ${c.relay}` +
+                return `ICE ${pc.iceConnectionState} | host ${c.host} srflx ${c.srflx} relay ${c.relay} | turn configured ${turnCount || 0}` +
                     (errors.length ? ` | ICE ERRORS ${errors.join(", ")}` : "");
             },
         };
@@ -257,7 +257,7 @@ const GLNet = (() => {
 
         function onIncoming(conn) {
             let player = null;
-            const diag = watchIce(conn);
+            const diag = watchIce(conn, cfg.turn.length);
             emit("notice", "INCOMING CONNECTION");
             const helloTimer = setTimeout(() => {
                 if (player) return;
@@ -386,7 +386,7 @@ const GLNet = (() => {
 
                 const conn = peer.connect(cfg.prefix + hostCode, { reliable: true }); // ordered + reliable: the level arrives intact
                 hostConn = conn;
-                diag = watchIce(conn);
+                diag = watchIce(conn, cfg.turn.length);
 
                 conn.on("open", () => safeSend(conn, { t: "hello", proto: PROTO, char: o.char }));
                 conn.on("error", e => { if (!done) fail(peerErr(e), true); else emit("error", peerErr(e)); });
