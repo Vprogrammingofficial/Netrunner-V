@@ -1,0 +1,157 @@
+/* ───────── game loader: popups with side "wings" ───────── */
+
+.gl-stage {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 14px;
+    max-width: 98vw;
+    max-height: 92vh;
+}
+
+.gl-main {
+    flex: 0 1 440px;
+    width: auto;
+    min-width: 280px;
+    padding: 20px 18px;
+    overflow-y: auto;
+}
+
+/* a wing slot keeps its width even when the wing inside is hidden, so the main frame stays centred */
+.gl-slot {
+    flex: 0 1 300px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.gl-slot>.sh-frame {
+    flex: 1;
+}
+
+.gl-hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.gl-wing {
+    width: auto;
+    padding: 16px 14px;
+    overflow-y: auto;
+}
+
+.gl-wing .sl-textarea {
+    height: 90px;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.gl-wing .sl-charlist {
+    max-height: 260px;
+}
+
+
+/* ───────── jack in row ───────── */
+
+.gl-jackrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0;
+}
+
+.gl-jackrow .sh-button {
+    flex: 1;
+    margin: 0;
+    font-size: 1.2em;
+    letter-spacing: 0.2em;
+}
+
+.gl-lightbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.gl-light {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--main-col);
+    background: transparent;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.gl-light--on {
+    background: var(--main-col);
+    box-shadow: 0 0 8px var(--main-col);
+}
+
+.gl-light__label {
+    font-size: 0.65em;
+    letter-spacing: 0.1em;
+}
+
+.gl-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.gl-disabled:hover {
+    background: transparent;
+    color: var(--main-col);
+}
+
+
+/* ───────── mini character ───────── */
+
+.gl-char {
+    border: 1px solid var(--main-col);
+    padding: 10px;
+}
+
+.gl-hp {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.gl-hp .le-property-input {
+    width: 70px;
+    margin: 0;
+    text-align: center;
+}
+
+.gl-hpbar {
+    height: 10px;
+    border: 1px solid var(--main-col);
+    margin-top: 8px;
+}
+
+.gl-hpbar__fill {
+    height: 100%;
+    background: var(--main-col);
+    box-shadow: 0 0 6px var(--main-col);
+}
+
+
+/* ───────── host popup ───────── */
+
+.gl-box {
+    min-height: 90px;
+}
+
+.gl-preview {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border: 1px solid var(--main-col);
+    background: #0a0a0a;
+}
+
+.gl-preview-info {
+    margin-top: 6px;
+    min-height: 2.8em;
+}

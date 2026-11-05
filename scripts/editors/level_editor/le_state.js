@@ -351,6 +351,7 @@ const LEState = (() => {
         addConnection, deleteConnection, setConnectionDv,
         toggleCore, addContent, removeContent,
         cleanChar: sanitizeChar,
+        sanitizeLevel: sanitize,
         defaultChar: () => sanitizeChar({}),
     };
 })();

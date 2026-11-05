@@ -212,5 +212,5 @@ const SaveLoad = (() => {
         if (p) p.style.display = "none";
     }
 
-    return { open, close };
+    return { open, close, encode, decode, fmtDate };
 })();

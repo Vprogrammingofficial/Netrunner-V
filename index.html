@@ -14,6 +14,7 @@
     <link href="styles/editors.css" rel="stylesheet">
     <link href="styles/netrunner_maker.css" rel="stylesheet">
     <link href="styles/level_editor.css" rel="stylesheet">
+    <link href="styles/game_loader.css" rel="stylesheet">
 </head>
 
 <body>
@@ -39,6 +40,21 @@
             <div class="sh-button" onclick="showPopup('pu-content')">CONTENT</div>
             <div class="sh-button" onclick="showPopup('pu-options')">OPTIONS</div>
             <div class="sh-button" onclick="showPopup('pu-credits')">CREDITS</div>
+        </div>
+    </div>
+
+    <!--Game loader-->
+    <div id="screen-gl" class="screen">
+        <canvas id="matrix-gl" class="mm-background"></canvas>
+        <div class="sh-frame">
+            <div class="mm-header">
+                <div class="mm-title">NETRUNNER</div>
+                <div class="mm-version">game loader</div>
+            </div>
+            <div class="sh-button" id="gl-play">PLAY</div>
+            <div class="sh-button" id="gl-host">HOST</div>
+            <div class="sh-button" id="gl-tutorial">TUTORIAL</div>
+            <div class="sh-button" onclick="showScreen('screen-mm')">CLOSE</div>
         </div>
     </div>
 
@@ -174,6 +190,70 @@
         </div>
     </div>
 
+    <!--Game loader popups-->
+    <div id="pu-gl-play" class="popup">
+        <div class="sh-frame">
+            <div class="opt-header">PLAY</div>
+            <div class="sh-button" id="gl-play-connect">CONNECT</div>
+            <div class="sh-button" id="gl-play-solo">SOLO</div>
+            <div class="sh-button" id="gl-play-close">CLOSE</div>
+        </div>
+    </div>
+
+    <div id="pu-gl-tutorial" class="popup">
+        <div class="sh-frame">
+            <div class="opt-header">TUTORIAL</div>
+            <div class="le-empty">COMING SOON</div>
+            <div class="sh-button" id="gl-tutorial-close">CLOSE</div>
+        </div>
+    </div>
+
+    <div id="pu-gl-jack" class="popup">
+        <div class="gl-stage">
+            <div class="gl-slot" id="gl-slot-level" data-gl-wing="level"></div>
+            <div class="sh-frame gl-main">
+                <div class="opt-header" id="gl-jack-title">SOLO</div>
+                <div class="gl-jackrow">
+                    <div class="gl-lightbox" id="gl-lb-level">
+                        <div class="gl-light" id="gl-light-level"></div>
+                        <div class="gl-light__label">LVL</div>
+                    </div>
+                    <div class="sh-button" id="gl-jackin">JACK IN</div>
+                    <div class="gl-lightbox" id="gl-lb-char">
+                        <div class="gl-light" id="gl-light-char"></div>
+                        <div class="gl-light__label">CHR</div>
+                    </div>
+                </div>
+                <div class="opt-row" id="gl-host-row" style="display:none">
+                    <div class="opt-label">HOST CODE</div>
+                    <input class="le-property-input" id="gl-host-code" type="text" spellcheck="false" style="width:auto;flex:1;margin:0;user-select:text">
+                </div>
+                <div class="sl-feedback" id="gl-jack-feedback"></div>
+                <div class="sl-charlist-label">CHARACTER</div>
+                <div id="gl-char"></div>
+                <div class="sh-button" id="gl-jack-close">CLOSE</div>
+            </div>
+            <div class="gl-slot" id="gl-slot-char" data-gl-wing="char"></div>
+        </div>
+    </div>
+
+    <div id="pu-gl-host" class="popup">
+        <div class="gl-stage">
+            <div class="gl-slot" data-gl-wing="level"></div>
+            <div class="sh-frame gl-main">
+                <div class="opt-header">GAMEPLAY OPTIONS</div>
+                <div class="opt-section gl-box"></div>
+                <div class="opt-header">LEVEL PREVIEW</div>
+                <canvas class="gl-preview" id="gl-preview" width="400" height="240"></canvas>
+                <div class="gl-preview-info" id="gl-preview-info"></div>
+                <div class="sl-feedback" id="gl-host-feedback"></div>
+                <div class="sh-button" id="gl-start-net">START NETWORK</div>
+                <div class="sh-button" id="gl-host-close">CLOSE</div>
+            </div>
+            <div class="gl-slot gl-hidden"></div>
+        </div>
+    </div>
+
     <div id="pu-content" class="popup">
         <div class="sh-frame">
             <div class="opt-header">CONTENT</div>
@@ -210,6 +290,7 @@
     <script src="scripts/editors/level_editor/le_panel.js"></script>
     <script src="scripts/editors/level_editor/le_input.js"></script>
     <script src="scripts/editors/level_editor/le_init.js"></script>
+    <script src="scripts/game/gameloader.js"></script>
     <script src="scripts/core/options.js"></script>
 
 
