@@ -85,6 +85,35 @@ const GLNet = (() => {
         return err;
     }
 
+    // Counts the ICE candidates a connection gathers, by type, so a failure can say WHY:
+    //   host 0            -> the browser is hiding local addresses (Brave shields, WebRTC-blocking extension, VPN)
+    //   relay 0           -> no working TURN relay (not configured, wrong credentials, or unreachable)
+    //   ICE ERRORS 701 .. -> that STUN/TURN server could not be reached
+    function watchIce(conn) {
+        const pc = conn && conn.peerConnection;
+        const counts = { host: 0, srflx: 0, prflx: 0, relay: 0 };
+        const errors = [];
+        if (pc && pc.addEventListener) {
+            pc.addEventListener("icecandidate", e => {
+                const cand = e.candidate;
+                if (!cand) return;
+                const t = cand.type || (/ typ (\w+)/.exec(cand.candidate || "") || [])[1];
+                if (t in counts) counts[t]++;
+            });
+            pc.addEventListener("icecandidateerror", e => {
+                if (errors.length < 2) errors.push(`${e.errorCode || "?"}${e.url ? " " + String(e.url).split("?")[0] : ""}`);
+            });
+        }
+        return {
+            summary() {
+                if (!pc) return "NO ICE INFO";
+                const c = counts;
+                return `ICE ${pc.iceConnectionState} | host ${c.host} srflx ${c.srflx} relay ${c.relay}` +
+                    (errors.length ? ` | ICE ERRORS ${errors.join(", ")}` : "");
+            },
+        };
+    }
+
     function create(userCfg) {
         const ext = (typeof window !== "undefined" && window.NET_CONFIG) || {}; // optional net_config.js
         const cfg = { ...DEFAULTS, ...ext, ...userCfg };
@@ -228,7 +257,13 @@ const GLNet = (() => {
 
         function onIncoming(conn) {
             let player = null;
-            const helloTimer = setTimeout(() => { if (!player) { try { conn.close(); } catch {} } }, cfg.connectTimeout);
+            const diag = watchIce(conn);
+            emit("notice", "INCOMING CONNECTION");
+            const helloTimer = setTimeout(() => {
+                if (player) return;
+                emit("notice", `PLAYER NEVER SENT HELLO [${diag.summary()}]`);
+                try { conn.close(); } catch {}
+            }, cfg.connectTimeout);
 
             conn.on("data", raw => {
                 if (!isMsg(raw)) return;
@@ -242,7 +277,10 @@ const GLNet = (() => {
                 fromClient(player, raw);
             });
 
-            const gone = () => { clearTimeout(helloTimer); if (player) removePlayer(player, "left"); };
+            const gone = () => {
+                clearTimeout(helloTimer);
+                if (player) removePlayer(player, "left");
+            };
             conn.on("close", gone);
             conn.on("error", gone);
         }
@@ -333,11 +371,13 @@ const GLNet = (() => {
 
             return new Promise((resolve, reject) => {
                 let done = false;
-                const timer = setTimeout(() => fail(new Error("CONNECTION TIMED OUT")), cfg.connectTimeout);
-                const fail = err => {
+                let diag = null;
+                const timer = setTimeout(() => fail(new Error("CONNECTION TIMED OUT"), true), cfg.connectTimeout);
+                const fail = (err, withDiag) => {
                     if (done) return;
                     done = true;
                     clearTimeout(timer);
+                    if (withDiag && diag && err instanceof Error) err.message += ` [${diag.summary()}]`; // before teardown closes the connection
                     teardown("connect failed", true);
                     reject(err instanceof Error ? err : new Error(String(err)));
                 };
@@ -346,11 +386,12 @@ const GLNet = (() => {
 
                 const conn = peer.connect(cfg.prefix + hostCode, { reliable: true }); // ordered + reliable: the level arrives intact
                 hostConn = conn;
+                diag = watchIce(conn);
 
                 conn.on("open", () => safeSend(conn, { t: "hello", proto: PROTO, char: o.char }));
-                conn.on("error", e => { if (!done) fail(peerErr(e)); else emit("error", peerErr(e)); });
+                conn.on("error", e => { if (!done) fail(peerErr(e), true); else emit("error", peerErr(e)); });
                 conn.on("close", () => {
-                    if (!done) fail(new Error("HOST CLOSED THE CONNECTION"));
+                    if (!done) fail(new Error("HOST CLOSED THE CONNECTION"), true);
                     else if (state === "connected") teardown("HOST DISCONNECTED");
                 });
 
