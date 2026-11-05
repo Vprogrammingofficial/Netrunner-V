@@ -33,13 +33,19 @@ const GLNet = (() => {
         maxPlayers: 8,          // including the host
         maxMsgBytes: 262144,    // incoming app messages larger than this (as JSON) are dropped
         brokerTimeout: 10000,   // time allowed to reach the PeerJS broker
-        connectTimeout: 12000,  // client: time allowed for open + welcome. host: time allowed for a hello
+        connectTimeout: 25000,  // client: time allowed for open + welcome (ICE can take a while through a relay). host: time allowed for a hello
         hostRetries: 5,         // new random code if one is taken
         pingEvery: 3000,
         silentTimeout: 12000,   // no traffic for this long = peer is gone
         relay: true,            // host re-broadcasts client app messages to the other clients
         cleanChar: null,        // (char) => cleanChar; defaults to LEState.cleanChar
-        peerOptions: {},        // passed to new Peer(): host/port/path/key for your own broker, config.iceServers for TURN
+        iceServers: [           // STUN finds your public address; the TURN entry is PeerJS's shared free relay (often busy)
+            { urls: "stun:stun.l.google.com:19302" },
+            { urls: "stun:global.stun.twilio.com:3478" },
+            { urls: ["turn:eu-0.turn.peerjs.com:3478", "turn:us-0.turn.peerjs.com:3478"], username: "peerjs", credential: "peerjsp" },
+        ],
+        turn: [],               // YOUR relay servers: [{ urls, username, credential }]. Usually set via net_config.js
+        peerOptions: {},        // passed to new Peer(): host/port/path/key for your own broker; config overrides iceServers entirely
     };
 
     const PEER_ERRORS = {
@@ -66,6 +72,12 @@ const GLNet = (() => {
 
     // PeerJS errors carry a `type`; turn them into short readable messages and keep the type for callers
     function peerErr(e) {
+        // PeerJS raises this on the connection (no type) when ICE fails: signalling worked, the direct path didn't
+        if (e && /negotiation of connection/i.test(String(e.message))) {
+            const err = new Error("CONNECTION BLOCKED BY NAT/FIREWALL - A TURN RELAY IS NEEDED");
+            err.type = "negotiation";
+            return err;
+        }
         const msg = PEER_ERRORS[e && e.type];
         if (!msg) return e instanceof Error ? e : new Error(String((e && e.message) || e));
         const err = new Error(msg);
@@ -74,7 +86,10 @@ const GLNet = (() => {
     }
 
     function create(userCfg) {
-        const cfg = { ...DEFAULTS, ...userCfg, peerOptions: { ...DEFAULTS.peerOptions, ...(userCfg && userCfg.peerOptions) } };
+        const ext = (typeof window !== "undefined" && window.NET_CONFIG) || {}; // optional net_config.js
+        const cfg = { ...DEFAULTS, ...ext, ...userCfg };
+        cfg.peerOptions = { ...DEFAULTS.peerOptions, ...ext.peerOptions, ...(userCfg && userCfg.peerOptions) };
+        if (!cfg.peerOptions.config) cfg.peerOptions.config = { iceServers: [...cfg.iceServers, ...cfg.turn] };
 
         const handlers = {};
         let peer = null;
