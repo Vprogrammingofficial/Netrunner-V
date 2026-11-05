@@ -1,0 +1,223 @@
+.sh-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: min(520px, 92vw);
+    border: 2px solid var(--main-col);
+    background: var(--bg-col);
+    padding: 40px 36px 32px;
+    animation: bf 10s infinite;
+}
+
+.sh-button {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    display: block;
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--main-col);
+    cursor: pointer;
+    text-align: center;
+    animation: bf 10s infinite;
+    background: transparent;
+    color: var(--main-col);
+    font-family: var(--font);
+    font-size: 1em;
+    letter-spacing: 0.08em;
+}
+
+.sh-button:hover {
+    background: var(--main-col);
+    color: var(--bg-col);
+}
+
+.sh-button.active {
+    background: var(--main-col);
+    color: var(--bg-col);
+}
+
+
+/*peg toggle*/
+
+.peg-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.peg-toggle--disabled {
+    cursor: not-allowed;
+}
+
+.peg-label {
+    font-size: 0.7em;
+    letter-spacing: 0.1em;
+    transition: color 0.15s;
+}
+
+.peg-label--on {
+    color: var(--main-col);
+}
+
+.peg-label--off {
+    color: var(--main-col);
+}
+
+.peg-track {
+    position: relative;
+    width: 40px;
+    height: 16px;
+    border: 2px solid var(--main-col);
+    background: transparent;
+    flex-shrink: 0;
+    animation: bf 10s infinite;
+}
+
+.peg-track--on {
+    border-color: var(--main-col);
+}
+
+.peg-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 8px;
+    height: 8px;
+    background: var(--main-col);
+    transition: left 0.15s;
+}
+
+.peg-track--on .peg-knob {
+    left: calc(100% - 10px);
+    box-shadow: 0 0 6px var(--main-col);
+}
+
+
+/*save/load shared*/
+
+.sl-frame {
+    width: min(560px, 92vw);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.sl-textarea {
+    width: 100%;
+    height: 120px;
+    background: var(--bg-col);
+    border: 1px solid var(--main-col);
+    color: var(--main-col);
+    font-family: var(--font);
+    font-size: 0.75em;
+    padding: 8px;
+    resize: none;
+    outline: none;
+    word-break: break-all;
+}
+
+.sl-textarea:focus {
+    border-color: #fff;
+    color: #fff;
+}
+
+.sl-feedback {
+    font-size: 0.8em;
+    min-height: 1.4em;
+    margin-top: 6px;
+    text-align: center;
+    letter-spacing: 0.06em;
+}
+
+.sl-charlist-label {
+    font-size: 0.75em;
+    letter-spacing: 0.12em;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    border-top: 1px solid var(--main-col);
+    padding-top: 10px;
+}
+
+.sl-charlist {
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sl-charlist__empty {
+    text-align: center;
+    opacity: 0.35;
+    font-size: 0.8em;
+    letter-spacing: 0.1em;
+    padding: 12px 0;
+}
+
+.sl-char-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--main-col);
+    padding: 8px 10px;
+    gap: 10px;
+}
+
+.sl-char-card__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.sl-char-card__name {
+    font-weight: bold;
+    font-size: 0.9em;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sl-char-card__stats {
+    font-size: 0.72em;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+}
+
+.sl-char-card__date {
+    font-size: 0.65em;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+}
+
+.sl-char-card__actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.sl-char-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--main-col);
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 0.72em;
+    letter-spacing: 0.06em;
+    background: transparent;
+    color: var(--main-col);
+}
+
+.sl-char-btn:hover {
+    background: var(--main-col);
+    color: var(--bg-col);
+}
+
+.sl-char-btn--delete {
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+.sl-char-btn--delete:hover {
+    background: #ff4444;
+    color: var(--bg-col);
+}

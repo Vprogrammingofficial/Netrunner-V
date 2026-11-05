@@ -1,0 +1,44 @@
+.ed-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 0 0 16px;
+    background-color: var(--main-col);
+}
+
+.ed-header {
+    color: var(--bg-col);
+    font-size: 2.0em;
+    flex: 1;
+}
+
+.ed-button {
+    flex: 0 0 10vw;
+    padding: 0 4px;
+}
+
+.ed-topbar .sh-button {
+    margin: 0;
+    background: transparent;
+    color: var(--bg-col);
+    border-color: var(--bg-col);
+    animation: none;
+}
+
+.ed-topbar .sh-button:hover {
+    background: var(--bg-col);
+    color: var(--main-col);
+}
+
+.ed-body {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+}

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NETRUNNING</title>
+    <link href="styles/core.css" rel="stylesheet">
+    <link href="styles/main_menu.css" rel="stylesheet">
+    <link href="styles/overlay.css" rel="stylesheet">
+    <link href="styles/shared_utilities.css" rel="stylesheet">
+    <link href="styles/screens_and_popups.css" rel="stylesheet">
+    <link href="styles/options.css" rel="stylesheet">
+    <link href="styles/editors.css" rel="stylesheet">
+    <link href="styles/netrunner_maker.css" rel="stylesheet">
+    <link href="styles/level_editor.css" rel="stylesheet">
+</head>
+
+<body>
+    <!--Overlay-->
+    <div class="tv-overlay">
+        <div class="reslines"></div>
+        <div class="large-scanline"></div>
+    </div>
+
+    <!--Main Menu-->
+    <div id="screen-mm" class="screen active">
+        <canvas id="matrix" class="mm-background"></canvas>
+        <div class="sh-frame">
+            <div class="mm-header">
+                <div class="mm-title">NETRUNNER</div>
+                <div class="mm-version">v0.3.02 the unified version</div>
+            </div>
+            <div class="sh-button" onclick="showScreen('screen-gl')">START NETRUN</div>
+            <div class="mm-editorgrid">
+                <div class="sh-button" onclick="showScreen('screen-le')">LEVEL EDITOR</div>
+                <div class="sh-button" onclick="showScreen('screen-ne')">NETRUNNER CREATOR</div>
+            </div>
+            <div class="sh-button" onclick="showPopup('pu-content')">CONTENT</div>
+            <div class="sh-button" onclick="showPopup('pu-options')">OPTIONS</div>
+            <div class="sh-button" onclick="showPopup('pu-credits')">CREDITS</div>
+        </div>
+    </div>
+
+    <!--Level editor-->
+    <div id="screen-le" class="screen">
+        <div class="ed-topbar">
+            <div class="ed-header">LEVEL EDITOR</div>
+            <div class="ed-button">
+                <div class="sh-button" id="le-reset">reset</div>
+            </div>
+            <div class="ed-button">
+                <div class="sh-button" id="le-saveload">save/load</div>
+            </div>
+            <div class="ed-button">
+                <div class="sh-button" onclick="showPopup('pu-options')">options</div>
+            </div>
+            <div class="ed-button">
+                <div class="sh-button" onclick="showScreen('screen-mm')">close</div>
+            </div>
+        </div>
+        <div class="ed-body">
+            <div class="le-sidebar" id="le-sidebar"></div>
+            <div class="le-main" id="le-main"><canvas id="level_editor"></canvas></div>
+        </div>
+    </div>
+
+    <!--Netrunner maker-->
+    <div id="screen-ne" class="screen">
+        <div class="ed-topbar">
+            <div class="ed-header">NETRUNNER CREATOR</div>
+            <div class="ed-button">
+                <div class="sh-button" id="ne-reset">reset</div>
+            </div>
+            <div class="ed-button">
+                <div class="sh-button" onclick="showPopup('pu-options')">options</div>
+            </div>
+            <div class="ed-button">
+                <div class="sh-button" onclick="showScreen('screen-mm')">close</div>
+            </div>
+        </div>
+        <div class="ed-body">
+            <div class="ne-sidebar" id="ne-sidebar">
+                <div class="ne-section-header">DECKS</div>
+                <div class="ne-list" id="ne-decks"></div>
+                <div class="ne-section-header ne-section-header--programs">PROGRAMS</div>
+                <div class="ne-list" id="ne-programs"></div>
+                <div class="ne-section-header ne-section-header--hardware">HARDWARE</div>
+                <div class="ne-list" id="ne-hardware"></div>
+            </div>
+            <div class="ne-main" id="ne-main">
+                <div class="ne-topbar">
+                    <div class="ne-topbar-left">
+                        <div class="ne-topbar-section">
+                            <label for="ne-stat-name">name</label>
+                            <input class="ne-stat-input ne-stat-input--wide" id="ne-stat-name" type="text" maxlength="24" spellcheck="false">
+                        </div>
+                        <div class="ne-topbar-section">
+                            <label for="ne-stat-interface">interface</label>
+                            <input class="ne-stat-input" id="ne-stat-interface" type="number" min="0">
+                        </div>
+                        <div class="ne-topbar-section">
+                            <label for="ne-stat-hp">hp max</label>
+                            <input class="ne-stat-input" id="ne-stat-hp" type="number" min="10">
+                        </div>
+                        <div class="ne-topbar-section">
+                            <label for="ne-stat-chp">hp current</label>
+                            <input class="ne-stat-input" id="ne-stat-chp" type="number" min="1">
+                        </div>
+                    </div>
+                    <div class="ne-topbar-section">
+                        <label for="ne-stat-team">team</label>
+                        <input class="ne-stat-input" id="ne-stat-team" type="number" min="0">
+                        <span class="ne-stat-note">0=NET</span>
+                    </div>
+                    <div class="ne-topbar-section">
+                        <div class="sh-button" id="ne-saveload" style="width:auto;margin:0;padding:8px 16px">SAVE / LOAD</div>
+                    </div>
+                </div>
+                <div class="ne-flash" id="ne-flash"></div>
+                <div class="ne-deck-holder" id="ne-deckbox"></div>
+                <div class="ne-external" id="ne-external-zone">
+                    <div class="ne-section-header ne-section-header--hardware">EXTERNAL HARDWARE</div>
+                    <div class="ne-list" id="ne-external"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--Popups-->
+    <div id="pu-options" class="popup">
+        <div class="sh-frame">
+            <div class="opt-header">VISUAL</div>
+            <div class="opt-section" id="opt-visual"></div>
+
+            <div class="opt-header">AUDIO</div>
+            <div class="opt-section">
+
+            </div>
+
+            <div class="opt-header">RADIO</div>
+            <div class="opt-section">
+
+            </div>
+
+            <div class="sh-button" onclick="hidePopup('pu-options')">CLOSE</div>
+        </div>
+    </div>
+
+    <div id="pu-saveload" class="popup">
+        <div class="sh-frame sl-frame">
+            <div class="opt-header" id="sl-title">SAVE / LOAD</div>
+
+            <div class="opt-section">
+                <div class="opt-row" id="sl-name-row">
+                    <div class="opt-label">NAME</div>
+                    <input class="le-property-input" id="sl-name" type="text" maxlength="40" spellcheck="false" style="width:auto;flex:1;margin:0">
+                </div>
+                <div class="opt-row">
+                    <div class="opt-label">CODE</div>
+                </div>
+                <div class="opt-row">
+                    <textarea class="sl-textarea" id="sl-code" spellcheck="false" style="user-select:text;-webkit-user-select:text"></textarea>
+                </div>
+                <div class="sl-feedback" id="sl-feedback"></div>
+                <div class="sh-button" id="sl-save">SAVE</div>
+            </div>
+
+            <div class="sl-charlist-label" id="sl-list-label">SAVED</div>
+            <div class="sl-charlist" id="sl-list"></div>
+
+            <div class="sh-button" onclick="SaveLoad.close()">CLOSE</div>
+        </div>
+    </div>
+
+    <div id="pu-content" class="popup">
+        <div class="sh-frame">
+            <div class="opt-header">CONTENT</div>
+            <div class="opt-section" id="content-list"></div>
+            <div class="sh-button" onclick="hidePopup('pu-content')">CLOSE</div>
+        </div>
+    </div>
+
+    <div id="pu-credits" class="popup">
+        <div class="sh-frame">
+            <div class="sh-button" onclick="hidePopup('pu-credits')">CLOSE</div>
+
+        </div>
+    </div>
+
+    <script src="scripts/core/storage.js"></script>
+    <script src="scripts/core/screenmaster.js"></script>
+    <script src="scripts/core/saveload.js"></script>
+    <script src="scripts/core/matrix.js"></script>
+
+    <script src="scripts/core/contentLoader.js"></script>
+    <script src="content/cdpr_rd.js"></script>
+    <script src="content/test_pack.js"></script>
+
+    <script src="scripts/editors/netrunner_editor/ne_state.js"></script>
+    <script src="scripts/editors/netrunner_editor/ne_render.js"></script>
+    <script src="scripts/editors/netrunner_editor/ne_dragdrop.js"></script>
+    <script src="scripts/editors/netrunner_editor/ne_init.js"></script>
+
+    <script src="scripts/editors/level_editor/le_assets.js"></script>
+    <script src="scripts/editors/level_editor/le_state.js"></script>
+    <script src="scripts/editors/level_editor/le_camera.js"></script>
+    <script src="scripts/editors/level_editor/le_render.js"></script>
+    <script src="scripts/editors/level_editor/le_panel.js"></script>
+    <script src="scripts/editors/level_editor/le_input.js"></script>
+    <script src="scripts/editors/level_editor/le_init.js"></script>
+    <script src="scripts/core/options.js"></script>
+
+
+    <script>
+        restoreSession();
+    </script>
+</body>
+
+</html>

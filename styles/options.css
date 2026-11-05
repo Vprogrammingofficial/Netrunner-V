@@ -1,0 +1,35 @@
+/* Options popup */
+
+.opt-header {
+    font-size: 1.5em;
+    letter-spacing: 0.18em;
+    font-weight: bolder;
+    color: var(--bg-col);
+    background: var(--main-col);
+    padding: 4px 8px;
+    margin-top: 10px;
+    margin-bottom: 0;
+    animation: none;
+    text-shadow: none;
+}
+
+.opt-section {
+    border: 2px solid var(--main-col);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.opt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+}
+
+.opt-label {
+    font-size: 1.0em;
+    letter-spacing: 0.12em;
+    flex-shrink: 0;
+}

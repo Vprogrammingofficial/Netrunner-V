@@ -1,0 +1,105 @@
+/*vars*/
+
+:root {
+    --bg-col: #080808;
+    --main-col: #00ff41;
+    --font: 'Courier New';
+
+    /* Glow shadows, and what the "off" frames of each flicker animation show.
+       Turning a flicker option off just makes the off frames identical to the glow,
+       so the glow stays but stops flashing. */
+    --glow-text: 0 0 4px var(--main-col), 0 0 12px var(--main-col);
+    --glow-box: 0 0 4px var(--main-col), 0 0 6px var(--main-col);
+    --text-flicker-off: none;
+    --outline-flicker-off: none;
+}
+
+
+/*options (set on <html> by options.js)*/
+
+html[data-text-flicker="off"] {
+    --text-flicker-off: var(--glow-text);
+}
+
+html[data-outline-flicker="off"] {
+    --outline-flicker-off: var(--glow-box);
+}
+
+html[data-scanlines="off"] .tv-overlay {
+    display: none;
+}
+
+
+/*main utils*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-col);
+    color: var(--main-col);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    user-select: none;
+    animation: flicker 2s infinite;
+}
+
+@keyframes flicker {
+    0%,
+    19%,
+    21%,
+    23%,
+    25%,
+    54%,
+    56%,
+    100% {
+        text-shadow: var(--glow-text);
+    }
+    20%,
+    24%,
+    55% {
+        text-shadow: var(--text-flicker-off);
+    }
+}
+
+@keyframes bf {
+    0%,
+    19%,
+    21%,
+    23%,
+    25%,
+    54%,
+    56%,
+    100% {
+        box-shadow: var(--glow-box);
+    }
+    20%,
+    24%,
+    55% {
+        box-shadow: var(--outline-flicker-off);
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-col);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--main-col);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--main-col);
+}

@@ -1,0 +1,53 @@
+.tv-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9000;
+    overflow: hidden;
+}
+
+.reslines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient( 0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.30) 2px, rgba(0, 0, 0, 0.30) 4px);
+    z-index: 1;
+}
+
+.large-scanline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -8%;
+    height: 8%;
+    z-index: 5;
+    pointer-events: none;
+    animation: largeScanline 10s linear infinite;
+    transform-origin: center;
+}
+
+.large-scanline::before {
+    content: '';
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    top: 0;
+    height: 100%;
+    backdrop-filter: brightness(2.0) blur(1px);
+    -webkit-backdrop-filter: brightness(2.0) blur(1px);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+}
+
+@keyframes largeScanline {
+    0% {
+        top: -8%;
+        transform: scaleX(1);
+    }
+    50% {
+        transform: scaleX(1.08);
+    }
+    100% {
+        top: 100%;
+        transform: scaleX(1);
+    }
+}
